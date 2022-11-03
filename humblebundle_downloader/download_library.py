@@ -239,9 +239,6 @@ class DownloadLibrary:
             product_folder = os.path.join(
                 self.library_path, bundle_title, product_title
             )
-            # Create directory to save the files to
-            try: os.makedirs(product_folder)  # noqa: E701
-            except OSError: pass  # noqa: E701
 
             # Download each file type of a product
             for file_type in download_type['download_struct']:
@@ -296,6 +293,9 @@ class DownloadLibrary:
                         ).strftime('%Y-%m-%d')
                     else:
                         last_modified = None
+                    # Create directory to save the files to
+                    try: os.makedirs(product_folder)  # noqa: E701
+                    except OSError: pass  # noqa: E701
                     self._process_download(
                         product_r,
                         cache_file_key,
