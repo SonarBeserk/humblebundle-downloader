@@ -26,11 +26,13 @@ class DownloadLibrary:
     def __init__(self, library_path, cookie_path=None, cookie_auth=None,
                  progress_bar=False, ext_include=None, ext_exclude=None,
                  platform_include=None, purchase_keys=None, trove=False,
-                 update=False):
+                 update=False, bundles_include=None, bundles_exclude=None):
         self.library_path = library_path
         self.progress_bar = progress_bar
         self.ext_include = [] if ext_include is None else list(map(str.lower, ext_include))  # noqa: E501
         self.ext_exclude = [] if ext_exclude is None else list(map(str.lower, ext_exclude))  # noqa: E501
+        self.bundles_include = [] if bundles_include is None else list(map(str.lower, bundles_include))  # noqa: E501
+        self.bundles_exclude = [] if bundles_exclude is None else list(map(str.lower, bundles_exclude))  # noqa: E501
 
         if platform_include is None or 'all' in platform_include:
             # if 'all', then do not need to use this check
@@ -227,6 +229,10 @@ class DownloadLibrary:
                         .format(new_name=new_name))
 
     def _process_product(self, order_id, bundle_title, product):
+        if self._should_download_bundle(bundle_title) is False: # noqa: E501
+            logger.info("Skipping bundle {bundle}"
+                        .format(bundle=bundle_title))
+            return
         product_title = _clean_name(product['human_name'])
         # Get all types of download for a product
         for download_type in product['downloads']:
@@ -410,4 +416,12 @@ class DownloadLibrary:
             return ext in self.ext_include
         elif self.ext_exclude != []:
             return ext not in self.ext_exclude
+        return True
+    
+    def _should_download_bundle(self, bundle):
+        bundle = bundle.lower()
+        if self.bundles_include != []:
+            return bundle in self.bundles_include
+        elif self.bundles_exclude != []:
+            return bundle not in self.bundles_exclude
         return True

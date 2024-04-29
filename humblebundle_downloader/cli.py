@@ -73,6 +73,19 @@ def parse_args(args):
         help=("The purchase download key. Find in the url on the "
               "products/bundle download page. Can set multiple"),
     )
+    bundle_ext = parser.add_mutually_exclusive_group()
+    bundle_ext.add_argument(
+        '-ib', '--include-bundles',
+        type=str, nargs='*',
+        help=("Bundle names to include when downloading files. "
+             "Ex: -ib \"Humble Indie Bundle 11\" \"Humble Mobile Bundle 2\"")
+    )
+    bundle_ext.add_argument(
+        '-eb', '--exclude-bundles',
+        type=str, nargs='*',
+        help=("Bundle names to exclude when downloading files. "
+             "Ex: -eb \"Humble Indie Bundle 11\" \"Humble Mobile Bundle 2\"")
+    )
 
     return parser.parse_args(args)
 
@@ -88,6 +101,8 @@ def cli():
         progress_bar=cli_args.progress,
         ext_include=cli_args.include,
         ext_exclude=cli_args.exclude,
+        bundles_include=cli_args.include_bundles,
+        bundles_exclude=cli_args.exclude_bundles,
         platform_include=cli_args.platform,
         purchase_keys=cli_args.keys,
         trove=cli_args.trove,
